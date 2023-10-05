@@ -14,3 +14,9 @@ export async function hasUnstagedChanges(path: string): Promise<boolean> {
 
   return !/^ M /m.test(output);
 }
+
+export async function resetUnstagedChanges(path: string): Promise<void> {
+  await spawn('git', ['restore', '.'], {
+    cwd: path,
+  });
+}

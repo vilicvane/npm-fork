@@ -18,5 +18,12 @@
     "typescript",
     "typescriptreact"
   ],
-  "cSpell.words": ["npmcli", "oclif", "packlist", "pacote", "Unstaged"]
+  "cSpell.words": [
+    "libnpmpublish",
+    "npmcli",
+    "oclif",
+    "packlist",
+    "pacote",
+    "Unstaged"
+  ]
 }
