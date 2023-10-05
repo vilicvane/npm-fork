@@ -5,11 +5,11 @@
   "license": "MIT",
   "author": "vilicvane",
   "scripts": {
-    "3": "yarn && yarn-deduplicate && yarn",
+    "3": "pnpm install && pnpm dedupe && pnpm install",
     "build": "rimraf ./bld && tsc --build",
     "lint": "eslint --no-error-on-unmatched-pattern . && run-in-every eslint-project --parallel --echo -- eslint --no-error-on-unmatched-pattern .",
     "lint-prettier": "prettier --check .",
-    "test": "yarn lint-prettier && yarn build && yarn lint"
+    "test": "pnpm lint-prettier && pnpm build && pnpm lint"
   },
   "dependencies": {
     "tslib": "^2.6.2"
@@ -21,7 +21,6 @@
     "prettier": "^3.0.3",
     "rimraf": "^5.0.5",
     "run-in-every": "^0.2.0",
-    "typescript": "^5.2.2",
-    "yarn-deduplicate": "^6.0.2"
+    "typescript": "^5.2.2"
   }
 }
