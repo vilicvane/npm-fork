@@ -1,5 +1,7 @@
 export interface PatchedPackageEntry {
   packageDir: string;
+  originalName: string;
+  originalVersion: string;
   patchedName: string;
   patchedVersion: string;
   files: string[];

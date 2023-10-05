@@ -1,13 +1,21 @@
+import {readFile, writeFile} from 'fs/promises';
+
 import type {types} from '@babel/core';
-import {transformFileAsync} from '@babel/core';
+import {transformAsync} from '@babel/core';
+import Chalk from 'chalk';
 
 import type {PatchedPackageEntryMap} from '../@patch';
 
 export async function patchScript(
+  name: string,
   path: string,
   entryMap: PatchedPackageEntryMap,
 ): Promise<void> {
-  await transformFileAsync(path, {
+  let changed = false;
+
+  const originalCode = await readFile(path, 'utf8');
+
+  const result = await transformAsync(originalCode, {
     plugins: [
       {
         visitor: {
@@ -37,6 +45,14 @@ export async function patchScript(
     ],
   });
 
+  const patchedCode = result?.code;
+
+  if (typeof patchedCode === 'string' && changed) {
+    await writeFile(path, patchedCode, 'utf8');
+
+    console.info(Chalk.cyan('patch script'), name);
+  }
+
   function updateSource(source: types.StringLiteral): void {
     const originalName = source.value.match(/^(?:@.+?\/)?[^/]+/)![0];
 
@@ -45,6 +61,8 @@ export async function patchScript(
     if (patched) {
       source.value =
         patched.patchedName + source.value.slice(originalName.length);
+
+      changed = true;
     }
   }
 }

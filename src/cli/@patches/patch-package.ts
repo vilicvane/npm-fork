@@ -1,4 +1,5 @@
 import PackageJson from '@npmcli/package-json';
+import Chalk from 'chalk';
 
 import type {PatchedPackageEntryMap} from '../@patch';
 
@@ -11,19 +12,19 @@ const DEPENDENCIES_KEYS = [
   'peerDependencies',
 ] as const;
 
-export async function patchPackageJSON(
-  packagePath: string,
+export async function patchPackage(
+  path: string,
   entryMap: PatchedPackageEntryMap,
 ): Promise<void> {
-  const file = await PackageJson.load(packagePath);
+  const file = await PackageJson.load(path);
 
   const originalName = file.content.name!;
 
-  const patched = entryMap.get(originalName)!;
+  const {patchedName, patchedVersion} = entryMap.get(originalName)!;
 
   file.update({
-    name: patched.patchedName,
-    version: patched.patchedVersion,
+    name: patchedName,
+    version: patchedVersion,
   });
 
   for (const key of DEPENDENCIES_KEYS) {
@@ -33,10 +34,10 @@ export async function patchPackageJSON(
       continue;
     }
 
-    for (const [originalName, patched] of entryMap) {
+    for (const [originalName, {patchedName, patchedVersion}] of entryMap) {
       if (hasOwnProperty.call(dependencies, originalName)) {
         delete dependencies[originalName];
-        dependencies[patched.patchedName] = patched.patchedVersion;
+        dependencies[patchedName] = patchedVersion;
       }
     }
 
@@ -46,4 +47,6 @@ export async function patchPackageJSON(
   }
 
   await file.save();
+
+  console.info(Chalk.red('patch package'), originalName);
 }

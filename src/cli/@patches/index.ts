@@ -1,2 +1,2 @@
-export * from './patch-package-json';
+export * from './patch-package';
 export * from './patch-script';

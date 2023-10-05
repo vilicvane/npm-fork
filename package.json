@@ -4,10 +4,13 @@
   "description": "Publish forks of npm packages with ease.",
   "license": "MIT",
   "author": "vilicvane",
-  "bin": "./bld/cli/main.js",
+  "bin": "./bin/run",
+  "oclif": {
+    "commands": "./bld/cli/commands"
+  },
   "scripts": {
     "3": "pnpm install && pnpm dedupe && pnpm install",
-    "npm-fork": "node ./bld/cli/main.js",
+    "npm-fork": "node ./bin/run",
     "build": "rimraf ./bld && tsc --build",
     "lint": "eslint --no-error-on-unmatched-pattern . && run-in-every eslint-project --parallel --echo -- eslint --no-error-on-unmatched-pattern .",
     "lint-prettier": "prettier --check .",
@@ -18,6 +21,7 @@
     "@babel/preset-env": "^7.22.20",
     "@npmcli/arborist": "^7.2.0",
     "@npmcli/package-json": "^5.0.0",
+    "@oclif/core": "^3.0.1",
     "@types/babel__core": "^7.20.2",
     "@types/npm-packlist": "^7.0.1",
     "@types/npmcli__arborist": "^5.6.2",
@@ -26,6 +30,7 @@
     "@types/semver": "^7.5.3",
     "chalk": "4",
     "main-function": "^0.1.7",
+    "minimatch": "^9.0.3",
     "npm-packlist": "^8.0.0",
     "pacote": "^17.0.4",
     "semver": "^7.5.4",
