@@ -1,0 +1,4 @@
+*
+!/src/cli/**/*.{ts,tsx}
+!/bld/cli/**
+*.tsbuildinfo

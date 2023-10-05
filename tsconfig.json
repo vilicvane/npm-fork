@@ -1,0 +1,8 @@
+{
+  "references": [
+    {
+      "path": "src/cli"
+    }
+  ],
+  "files": []
+}
