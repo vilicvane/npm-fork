@@ -1,0 +1,16 @@
+{
+  "$schema": "boilerplate.schema.json",
+  "boilerplate": "@mufan/code-boilerplates/typescript",
+  "options": {
+    "name": "npm-fork",
+    "description": "Publish forks of npm packages with ease.",
+    "license": "MIT",
+    "author": "vilicvane",
+    "defaultBranch": "master",
+    "projects": [
+      {
+        "name": "cli"
+      }
+    ]
+  }
+}
