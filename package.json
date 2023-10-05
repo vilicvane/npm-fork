@@ -2,6 +2,7 @@
   "name": "npm-fork",
   "version": "0.0.0",
   "description": "Publish forks of npm packages with ease.",
+  "repository": "https://github.com/vilic/npm-fork.git",
   "license": "MIT",
   "author": "vilicvane",
   "bin": "./bin/run",

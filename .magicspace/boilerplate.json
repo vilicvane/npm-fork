@@ -4,8 +4,14 @@
   "options": {
     "name": "npm-fork",
     "description": "Publish forks of npm packages with ease.",
+    "repository": "https://github.com/vilic/npm-fork.git",
     "license": "MIT",
     "author": "vilicvane",
+    "badges": {
+      "npm": true,
+      "repo": true,
+      "license": true
+    },
     "defaultBranch": "master",
     "packageManager": "pnpm",
     "projects": [
