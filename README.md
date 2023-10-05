@@ -4,7 +4,7 @@
 
 # npm-fork
 
-Just another awesome magic.
+Publish forks of npm packages with ease.
 
 ## License
 
