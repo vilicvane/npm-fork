@@ -6,6 +6,34 @@
 
 Publish forks of npm packages with ease.
 
+Occasionally, we fork an npm project to fix some bugs or add some features. But to publish the forked package, we have to manually change the package name and version in `package.json` and JavaScript files. This tool automates the process and leave the source code untouched.
+
+## What it does?
+
+1. It patches `package.json` and JavaScript files (using `npm-packlist`) with different/additional scope and prerelease versions.
+2. It runs `npm publish` to publish the forked packages.
+3. It runs `git restore .` to reset the patches after publishing.
+
+## Installation
+
+```sh
+npm install --global npm-fork
+```
+
+## Usage
+
+Use `npm-fork patch` to apply patches to the current project:
+
+```sh
+npm-fork patch --scope "@fork" --package "name" --package "@origin/*"
+```
+
+Or directly `npm-fork publish`:
+
+```sh
+npm-fork publish --scope "@fork" --package "name" --package "@origin/*"
+```
+
 ## License
 
 MIT License.
