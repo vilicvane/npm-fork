@@ -22,7 +22,7 @@ npm install --global npm-fork
 
 ## Usage
 
-Use `npm-fork patch` to apply patches to the current project:
+Commit or stage your changes and then use `npm-fork patch` to apply patches to the current project:
 
 ```sh
 # single package
