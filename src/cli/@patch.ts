@@ -3,6 +3,7 @@ import {join} from 'path';
 
 import Arborist from '@npmcli/arborist';
 import {Errors} from '@oclif/core';
+import {glob} from 'glob';
 import {match} from 'minimatch';
 import packlist from 'npm-packlist';
 import Pacote from 'pacote';
@@ -33,39 +34,23 @@ export async function patch(
     path: projectDir,
   }).loadActual();
 
-  const entries: PatchedPackageEntry[] = [];
+  let entries: PatchedPackageEntry[];
 
   if (packagePatterns) {
     const {workspaces: workspacePathMap} = root;
 
-    if (!workspacePathMap) {
-      throw new Errors.CLIError('Expecting a project with workspaces.');
-    }
-
-    const workspaceCandidates = Array.from(workspacePathMap.keys());
-
-    for (const pattern of packagePatterns) {
-      const matches = match(workspaceCandidates, pattern);
-
-      const paths = matches.map(match => workspacePathMap.get(match)!);
-
-      const entriesToAdd: PatchedPackageEntry[] = [];
-
-      for (const path of paths) {
-        const tree = await new Arborist({path}).loadActual();
-
-        const entry = await buildPatchedPackageEntry(tree, scope);
-
-        if (entry) {
-          entriesToAdd.push(entry);
-        }
-      }
-
-      if (entriesToAdd.length === 0) {
-        throw new Errors.CLIError(`No workspace matches "${pattern}".`);
-      }
-
-      entries.push(...entriesToAdd);
+    if (workspacePathMap) {
+      entries = await getWorkspacePatchedPackageEntries(
+        scope,
+        packagePatterns,
+        workspacePathMap,
+      );
+    } else {
+      entries = await getDirectoryPatchedPackageEntries(
+        scope,
+        packagePatterns,
+        projectDir,
+      );
     }
   } else {
     const entry = await buildPatchedPackageEntry(root, scope);
@@ -74,7 +59,7 @@ export async function patch(
       throw new Errors.CLIError('No package to patch.');
     }
 
-    entries.push(entry);
+    entries = [entry];
   }
 
   const patchedPackageEntryMap = new Map(
@@ -86,12 +71,89 @@ export async function patch(
       if (file === 'package.json') {
         await patchPackage(packageDir, patchedPackageEntryMap);
       } else if (/\.[cm]?js$/.test(file)) {
-        await patchScript(file, join(packageDir, file), patchedPackageEntryMap);
+        await patchScript(
+          projectDir,
+          join(packageDir, file),
+          patchedPackageEntryMap,
+        );
       }
     }
   }
 
   return entries;
+}
+
+async function getWorkspacePatchedPackageEntries(
+  scope: string,
+  packagePatterns: string[],
+  workspacePathMap: Map<string, string>,
+): Promise<PatchedPackageEntry[]> {
+  const workspaceCandidates = Array.from(workspacePathMap.keys());
+
+  return getPatchedPackageEntries(scope, packagePatterns, async pattern => {
+    return match(workspaceCandidates, pattern).map(
+      match => workspacePathMap.get(match)!,
+    );
+  });
+}
+
+async function getDirectoryPatchedPackageEntries(
+  scope: string,
+  packagePatterns: string[],
+  projectDir: string,
+): Promise<PatchedPackageEntry[]> {
+  return getPatchedPackageEntries(scope, packagePatterns, pattern => {
+    pattern = pattern.endsWith('/') ? pattern : `${pattern}/`;
+
+    return glob(pattern, {
+      cwd: projectDir,
+    });
+  });
+}
+
+async function getPatchedPackageEntries(
+  scope: string,
+  packagePatterns: string[],
+  pathsCallback: (pattern: string) => Promise<string[]>,
+): Promise<PatchedPackageEntry[]> {
+  const map = new Map<string, PatchedPackageEntry | false>();
+
+  for (const pattern of packagePatterns) {
+    const paths = await pathsCallback(pattern);
+
+    let matched = false;
+
+    for (const path of paths) {
+      const built = map.get(path);
+
+      if (built !== undefined) {
+        if (built) {
+          matched = true;
+        }
+
+        continue;
+      }
+
+      const tree = await new Arborist({path}).loadActual();
+
+      const entry = await buildPatchedPackageEntry(tree, scope);
+
+      if (entry) {
+        map.set(path, entry);
+        matched = true;
+      } else {
+        map.set(path, false);
+      }
+    }
+
+    if (!matched) {
+      throw new Errors.CLIError(`No workspace matches "${pattern}".`);
+    }
+  }
+
+  return Array.from(map.values()).filter(
+    (entry): entry is Exclude<typeof entry, false> => entry !== false,
+  );
 }
 
 async function buildPatchedPackageEntry(
