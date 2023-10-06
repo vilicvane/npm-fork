@@ -1,4 +1,5 @@
 import {readFile, writeFile} from 'fs/promises';
+import {relative} from 'path';
 
 import type {types} from '@babel/core';
 import {transformAsync} from '@babel/core';
@@ -7,7 +8,7 @@ import Chalk from 'chalk';
 import type {PatchedPackageEntryMap} from '../@patch';
 
 export async function patchScript(
-  name: string,
+  cwd: string,
   path: string,
   entryMap: PatchedPackageEntryMap,
 ): Promise<void> {
@@ -50,7 +51,7 @@ export async function patchScript(
   if (typeof patchedCode === 'string' && changed) {
     await writeFile(path, patchedCode, 'utf8');
 
-    console.info(Chalk.cyan('patch script'), name);
+    console.info(Chalk.cyan('patch script'), relative(cwd, path));
   }
 
   function updateSource(source: types.StringLiteral): void {
