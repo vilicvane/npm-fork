@@ -25,13 +25,17 @@ npm install --global npm-fork
 Use `npm-fork patch` to apply patches to the current project:
 
 ```sh
+# single package
+npm-fork patch --scope "@fork"
+
+# multiple packages
 npm-fork patch --scope "@fork" --package "name" --package "@origin/*"
 ```
 
 Or directly `npm-fork publish`:
 
 ```sh
-npm-fork publish --scope "@fork" --package "name" --package "@origin/*"
+npm-fork publish --scope "@fork"
 ```
 
 ## License
