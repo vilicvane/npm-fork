@@ -178,7 +178,11 @@ async function buildPatchedPackageEntry(
 
   const files = await packlist(tree, {parent: null, path: tree.path});
 
-  const patchedName = originalName.replace(/^(?:@.+?\/)?/, `${scope}/`);
+  const patchedName = originalName.replace(
+    /^(?:@(.+?)\/)?/,
+    (_text, originalScope) =>
+      originalScope ? `${scope}/${originalScope}__` : `${scope}/`,
+  );
 
   let baseVersion: string;
 
