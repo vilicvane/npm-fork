@@ -30,6 +30,9 @@ npm-fork patch --scope "@fork"
 
 # multiple packages
 npm-fork patch --scope "@fork" --package "name" --package "@origin/*"
+
+# use package paths instead of names if workspace is not configured or recognized (e.g., pnpm).
+npm-fork patch --scope "@fork" --package "packages/*"
 ```
 
 Or directly `npm-fork publish`:
