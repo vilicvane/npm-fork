@@ -5,12 +5,10 @@ import Chalk from 'chalk';
 
 import type {PatchedPackageEntry} from './@patch';
 
-export async function publish({
-  packageDir,
-  originalName,
-  patchedName,
-  patchedVersion,
-}: PatchedPackageEntry): Promise<void> {
+export async function publish(
+  {packageDir, originalName, patchedName, patchedVersion}: PatchedPackageEntry,
+  publicAccess: boolean,
+): Promise<void> {
   console.info(
     Chalk.red('publishing'),
     `${patchedName}${Chalk.dim(
@@ -18,11 +16,15 @@ export async function publish({
     )}`,
   );
 
-  const cp = spawn('npm', ['publish'], {
-    cwd: packageDir,
-    stdio: 'inherit',
-    shell: true,
-  });
+  const cp = spawn(
+    'npm',
+    ['publish', ...(publicAccess ? ['--access', 'public'] : [])],
+    {
+      cwd: packageDir,
+      stdio: 'inherit',
+      shell: true,
+    },
+  );
 
   const [code] = (await once(cp, 'exit')) as [number];
 

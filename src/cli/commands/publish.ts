@@ -1,4 +1,4 @@
-import {Command, Errors} from '@oclif/core';
+import {Command, Errors, Flags} from '@oclif/core';
 
 import {COMMON_FLAGS} from '../@command';
 import {hasUnstagedChanges, resetUnstagedChanges} from '../@git';
@@ -8,7 +8,7 @@ import {publish} from '../@publish';
 export class PublishCommand extends Command {
   override async run(): Promise<void> {
     const {
-      flags: {scope, package: packagePatterns},
+      flags: {scope, package: packagePatterns, public: publicAccess},
     } = await this.parse(PublishCommand);
 
     const cwd = process.cwd();
@@ -22,7 +22,7 @@ export class PublishCommand extends Command {
     const entries = await patch(cwd, packagePatterns, scope);
 
     for (const entry of entries) {
-      await publish(entry);
+      await publish(entry, publicAccess);
     }
 
     await resetUnstagedChanges(cwd);
@@ -39,5 +39,8 @@ export class PublishCommand extends Command {
 
   static override flags = {
     ...COMMON_FLAGS,
+    public: Flags.boolean({
+      description: 'Append "--access public" to npm publish command.',
+    }),
   };
 }
