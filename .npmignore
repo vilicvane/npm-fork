@@ -2,3 +2,4 @@
 !/src/cli/**/*.{ts,tsx}
 !/bld/cli/**
 *.tsbuildinfo
+!/bin/**
